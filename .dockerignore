@@ -1,0 +1,51 @@
+# Node modules
+node_modules
+npm-debug.log*
+
+# Laravel
+.env*
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+bootstrap/cache/*
+
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+public/build
+public/hot
+public/storage
+
+# Composer
+vendor
+
+# Documentation
+README.md
+EASYPANEL_INSTALL.md
+GITHUB_SETUP.md
+
+# Database
+*.sqlite
+*.db
+
+# Backup files
+*.backup
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
