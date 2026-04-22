@@ -66,11 +66,11 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Instalar dependências do PHP
 RUN composer install --optimize-autoloader --no-dev --no-interaction
 
-# Instalar dependências do Node.js e compilar assets
-RUN npm install \
-    && npm run build \
-    && npm cache clean --force
+# Instalar dependências do Node.js
+RUN npm install
 
+# Compilar assets para produção
+RUN npm run build
 
 # Criar storage link
 RUN php artisan storage:link
