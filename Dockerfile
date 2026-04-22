@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Instalar extensões PHP essenciais (sem tokenizer que causa erro)
-RUN docker-php-ext-install pdo_sqlite zip bcmath ctype fileinfo mbstring xml
+RUN docker-php-ext-install pdo_mysql pdo_sqlite zip bcmath ctype fileinfo mbstring xml
 
 # Instalar GD (sem webp para evitar conflitos)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -41,6 +41,9 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
 # Instalar Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Configurar ServerName para evitar warnings
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
 # Habilitar módulos Apache
 RUN a2enmod rewrite headers expires
 
@@ -48,16 +51,19 @@ RUN a2enmod rewrite headers expires
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
     && sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/sites-available/000-default.conf
 
+# Configurar permissões essenciais (mínimo necessário)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
+    && touch /var/www/html/storage/logs/laravel.log \
+    && chmod 666 /var/www/html/storage/logs/laravel.log
+
 # Definir diretório de trabalho
 WORKDIR /var/www/html
 
 # Copiar arquivos do projeto
 COPY --chown=www-data:www-data . .
 
-# Criar banco de dados SQLite
-RUN mkdir -p database \
-    && touch database/database.sqlite \
-    && chmod 666 database/database.sqlite
+# Removido criação de SQLite (usando MySQL externo)
 
 # Instalar dependências do PHP
 RUN composer install --optimize-autoloader --no-dev --no-interaction
@@ -66,6 +72,9 @@ RUN composer install --optimize-autoloader --no-dev --no-interaction
 RUN npm install \
     && npm run build \
     && npm cache clean --force
+
+# Gerar APP_KEY e configurar ambiente
+RUN php artisan key:generate --force
 
 # Criar storage link
 RUN php artisan storage:link
