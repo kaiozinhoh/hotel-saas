@@ -13,9 +13,9 @@
 
         @routes
         @viteReactRefresh
-        <!-- Assets com URLs relativas para evitar mixed content -->
-        <link rel="stylesheet" href="./build/assets/app.css">
-        <script src="./build/assets/app.js"></script>
+        <!-- Assets com URLs absolutas sem domínio para evitar mixed content -->
+        <link rel="stylesheet" href="/build/assets/app.css">
+        <script src="/build/assets/app.js"></script>
         @inertiaHead
     </head>
     <body class="font-sans antialiased bg-gray-50 text-gray-900">
