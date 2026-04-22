@@ -67,11 +67,14 @@ RUN npm install \
     && npm run build \
     && npm cache clean --force
 
-# Configurar permissões
+# Configurar permissões (otimizado)
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache \
-    && chmod -R 755 /var/www/html/public \
+    && find /var/www/html/storage -type d -exec chmod 755 {} \; \
+    && find /var/www/html/storage -type f -exec chmod 644 {} \; \
+    && find /var/www/html/bootstrap/cache -type d -exec chmod 755 {} \; 2>/dev/null || true \
+    && find /var/www/html/bootstrap/cache -type f -exec chmod 644 {} \; 2>/dev/null || true \
+    && find /var/www/html/public -type d -exec chmod 755 {} \; \
+    && find /var/www/html/public -type f -exec chmod 644 {} \; \
     && touch storage/logs/laravel.log \
     && chmod 666 storage/logs/laravel.log
 
