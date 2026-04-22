@@ -60,7 +60,7 @@ class HotelController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:hotels',
+            'email' => 'required|email|unique:hotels,email',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:100',
@@ -68,13 +68,16 @@ class HotelController extends Controller
             'postal_code' => 'nullable|string|max:20',
             'country' => 'nullable|string|max:100',
             'description' => 'nullable|string',
-            'rooms_count' => 'required|integer|min:1'
+            'rooms_count' => 'required|integer|min:0',
+            'active' => 'boolean',
+            'subdomain' => 'required|string|max:50|unique:hotels,subdomain|regex:/^[a-z0-9-]+$/',
+            'port' => 'required|integer|min:3000|max:9999|unique:hotels,port'
         ]);
 
         $hotel = Hotel::create($validated);
 
         return redirect()->route('admin.hotels.index')
-            ->with('success', 'Hotel criado com sucesso!');
+            ->with('success', "Hotel '{$hotel->name}' criado com sucesso! Acesse em: {$hotel->subdomain}.exchangesistemas.com.br");
     }
 
     public function edit(Hotel $hotel)

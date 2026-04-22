@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminOnly::class,
             'super.admin' => \App\Http\Middleware\SuperAdmin::class,
             'hotel.selected' => \App\Http\Middleware\EnsureHotelSelected::class,
+            'hotel.subdomain' => \App\Http\Middleware\HotelSubdomain::class,
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,

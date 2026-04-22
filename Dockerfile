@@ -71,8 +71,10 @@ RUN npm install \
     && npm run build \
     && npm cache clean --force
 
-# APP_KEY será fornecido pelas variáveis de ambiente do EasyPanel
-# migrate --seed será executado manualmente após o primeiro deploy
+# Script automático de migrate condicional (só executa se necessário)
+COPY docker/auto-migrate.sh /usr/local/bin/auto-migrate.sh
+RUN chmod +x /usr/local/bin/auto-migrate.sh
+RUN /usr/local/bin/auto-migrate.sh
 
 # Criar storage link
 RUN php artisan storage:link
@@ -86,5 +88,9 @@ RUN php artisan config:cache \
 EXPOSE 80
 
 
+# Script de inicialização automática (verifica migrate a cada startup)
+COPY docker/startup.sh /usr/local/bin/startup.sh
+RUN chmod +x /usr/local/bin/startup.sh
+
 # Comando de inicialização
-CMD ["apache2-foreground"]
+CMD ["/usr/local/bin/startup.sh"]

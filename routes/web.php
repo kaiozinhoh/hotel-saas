@@ -19,13 +19,27 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Rota inicial
-Route::get('/', function () {
-    return redirect()->route('login');
+// Middleware de subdomínio para todas as rotas
+Route::middleware(['hotel.subdomain'])->group(function () {
+
+    // Rota inicial - depende do contexto
+    Route::get('/', function () {
+        $context = session('context', 'admin');
+        
+        if ($context === 'admin') {
+            return redirect()->route('login');
+        } else {
+            // Subdomínio de hotel - mostrar landing page do hotel
+            return Inertia::render('Hotel/Landing', [
+                'hotel' => view('current_hotel')
+            ]);
+        }
+    });
+
 });
 
 // Rotas Autenticadas (Qualquer usuário logado)
-Route::middleware(['auth', 'hotel.selected'])->group(function () {
+Route::middleware(['hotel.subdomain', 'auth', 'hotel.selected'])->group(function () {
 
     // Perfil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
