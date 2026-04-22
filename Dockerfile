@@ -71,8 +71,7 @@ RUN npm install \
     && npm run build \
     && npm cache clean --force
 
-# Gerar APP_KEY e configurar ambiente
-RUN php artisan key:generate --force
+# APP_KEY será fornecido pelas variáveis de ambiente do EasyPanel
 
 # Criar storage link
 RUN php artisan storage:link
