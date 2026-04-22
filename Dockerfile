@@ -71,10 +71,6 @@ RUN npm install \
     && npm run build \
     && npm cache clean --force
 
-# Script automático de migrate condicional (só executa se necessário)
-COPY docker/auto-migrate.sh /usr/local/bin/auto-migrate.sh
-RUN chmod +x /usr/local/bin/auto-migrate.sh
-RUN /usr/local/bin/auto-migrate.sh
 
 # Criar storage link
 RUN php artisan storage:link
