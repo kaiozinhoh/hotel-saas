@@ -30,8 +30,9 @@ Route::middleware(['hotel.subdomain'])->group(function () {
             return redirect()->route('login');
         } else {
             // Subdomínio de hotel - mostrar landing page do hotel
+            $hotel = session('current_hotel_id') ? \App\Models\Hotel::find(session('current_hotel_id')) : null;
             return Inertia::render('Hotel/Landing', [
-                'hotel' => view('current_hotel')
+                'hotel' => $hotel
             ]);
         }
     });

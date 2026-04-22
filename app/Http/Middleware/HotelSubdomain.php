@@ -18,8 +18,12 @@ class HotelSubdomain
         $host = $request->getHost();
         $subdomain = explode('.', $host)[0] ?? null;
         
+        // Obter domínio principal das variáveis de ambiente
+        $mainDomain = env('APP_URL');
+        $mainDomain = parse_url($mainDomain, PHP_URL_HOST) ?? $mainDomain;
+        
         // Se for www ou não tiver subdomínio, é painel admin
-        if ($subdomain === 'www' || !$subdomain || $host === 'exchangesistemas.com.br') {
+        if ($subdomain === 'www' || !$subdomain || $host === $mainDomain) {
             // Definir que estamos no painel admin
             session(['context' => 'admin']);
             return $next($request);
@@ -30,7 +34,7 @@ class HotelSubdomain
         
         if (!$hotel) {
             // Hotel não encontrado, redirecionar para página principal
-            return redirect('https://www.exchangesistemas.com.br');
+            return redirect(env('APP_URL'));
         }
         
         // Definir hotel atual no contexto
