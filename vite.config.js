@@ -11,7 +11,7 @@ export default defineConfig({
         react(),
     ],
     build: {
-        // Configuração simplificada para produção
+        // Configuração para produção com HTTPS
         assetsDir: 'assets',
         outDir: 'public/build',
         emptyOutDir: true,
@@ -23,5 +23,13 @@ export default defineConfig({
                 entryFileNames: 'assets/[name].[hash].js',
             },
         },
+        // Garantir URLs relativas (sem protocolo)
+        assetsInlineLimit: 0,
+    },
+    // Usar URLs relativas para evitar mixed content
+    base: './',
+    server: {
+        https: false,
+        host: true,
     },
 });
