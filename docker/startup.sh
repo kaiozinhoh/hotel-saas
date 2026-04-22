@@ -20,21 +20,21 @@ echo "Verificando configuração do banco..."
 if [ "$TABLE_EXISTS" = "false" ]; then
     echo "Primeira inicialização detectada. Configurando banco..."
     
-    # Criar .env se não existir
+    # Criar .env se não existir (usando variáveis do EasyPanel)
     if [ ! -f .env ]; then
-        echo "Criando arquivo .env automaticamente..."
-        cat > .env << 'EOF'
-APP_NAME="Exchange Hotel"
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://www.exchangesistemas.com.br/demo-hotel
-APP_KEY=base64:hqUlRmDKFXK8nJDvwF/iGS44ZXXdpQMLuRN+UqJOuWo=
-DB_CONNECTION=mysql
-DB_HOST=172.17.0.1:5174
-DB_PORT=3305
-DB_DATABASE=exchange-hotel
-DB_USERNAME=root
-DB_PASSWORD=Kaio@3005
+        echo "Criando arquivo .env com variáveis do EasyPanel..."
+        cat > .env << EOF
+APP_NAME="\${APP_NAME:-Exchange Hotel}"
+APP_ENV="\${APP_ENV:-production}"
+APP_DEBUG="\${APP_DEBUG:-false}"
+APP_URL="\${APP_URL:-https://www.exchangesistemas.com.br/demo-hotel}"
+APP_KEY="\${APP_KEY:-base64:hqUlRmDKFXK8nJDvwF/iGS44ZXXdpQMLuRN+UqJOuWo=}"
+DB_CONNECTION="\${DB_CONNECTION:-mysql}"
+DB_HOST="\${DB_HOST:-172.17.0.1:5174}"
+DB_PORT="\${DB_PORT:-3305}"
+DB_DATABASE="\${DB_DATABASE:-exchange-hotel}"
+DB_USERNAME="\${DB_USERNAME:-root}"
+DB_PASSWORD="\${DB_PASSWORD:-Kaio@3005}"
 EOF
     fi
     
