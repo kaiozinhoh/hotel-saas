@@ -31,15 +31,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Instalar extensões PHP uma por vez para evitar erros
-RUN docker-php-ext-install pdo_sqlite
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install bcmath
-RUN docker-php-ext-install ctype
-RUN docker-php-ext-install fileinfo
-RUN docker-php-ext-install mbstring
-RUN docker-php-ext-install tokenizer
-RUN docker-php-ext-install xml
+# Instalar extensões PHP essenciais (sem tokenizer que causa erro)
+RUN docker-php-ext-install pdo_sqlite zip bcmath ctype fileinfo mbstring xml
 
 # Instalar GD (sem webp para evitar conflitos)
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
