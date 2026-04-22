@@ -14,7 +14,9 @@ export default function GuestLayout({ children }) {
                     )}
                 </Link>
                 {/* Opcional: Mostrar nome do hotel abaixo da logo */}
-                <h1 className="text-center mt-4 text-xl font-bold text-gray-700">{app_settings?.hotel_name}</h1>
+                {app_settings?.hotel_name && (
+                    <h1 className="text-center mt-4 text-xl font-bold text-gray-700">{app_settings.hotel_name}</h1>
+                )}
             </div>
 
             <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg dark:bg-gray-800">
