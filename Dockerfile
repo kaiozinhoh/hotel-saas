@@ -51,19 +51,17 @@ RUN a2enmod rewrite headers expires
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf \
     && sed -i 's|AllowOverride None|AllowOverride All|g' /etc/apache2/sites-available/000-default.conf
 
-# Configurar permissões essenciais (mínimo necessário)
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
-    && touch /var/www/html/storage/logs/laravel.log \
-    && chmod 666 /var/www/html/storage/logs/laravel.log
-
 # Definir diretório de trabalho
 WORKDIR /var/www/html
 
 # Copiar arquivos do projeto
 COPY --chown=www-data:www-data . .
 
-# Removido criação de SQLite (usando MySQL externo)
+# Configurar permissões essenciais (após copiar arquivos)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
+    && touch /var/www/html/storage/logs/laravel.log \
+    && chmod 666 /var/www/html/storage/logs/laravel.log
 
 # Instalar dependências do PHP
 RUN composer install --optimize-autoloader --no-dev --no-interaction
