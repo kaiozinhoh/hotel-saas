@@ -12,7 +12,7 @@ ENV APP_NAME="Hotel Manager SaaS" \
     APP_DEBUG=false \
     APP_URL=http://localhost
 
-# Instalar dependências do sistema
+# Instalar dependências do sistema (mínimo necessário)
 RUN apt-get update && apt-get install -y \
     libzip-dev \
     libpng-dev \
@@ -20,8 +20,6 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
-    libwebp-dev \
-    libxpm-dev \
     zip \
     unzip \
     curl \
@@ -33,11 +31,18 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Instalar extensões PHP necessárias (separadamente para evitar erros)
-RUN docker-php-ext-install pdo_mysql pdo_sqlite zip bcmath ctype fileinfo json mbstring openssl tokenizer xml
+# Instalar extensões PHP uma por vez para evitar erros
+RUN docker-php-ext-install pdo_sqlite
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install ctype
+RUN docker-php-ext-install fileinfo
+RUN docker-php-ext-install mbstring
+RUN docker-php-ext-install tokenizer
+RUN docker-php-ext-install xml
 
-# Instalar GD separadamente
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+# Instalar GD (sem webp para evitar conflitos)
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
 
 # Instalar Composer
@@ -53,19 +58,16 @@ RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available
 # Definir diretório de trabalho
 WORKDIR /var/www/html
 
-# Copiar arquivos de configuração primeiro
-COPY composer.json composer.lock* ./
-
-# Instalar dependências do PHP
-RUN composer install --optimize-autoloader --no-dev --no-interaction
-
-# Copiar resto dos arquivos
+# Copiar arquivos do projeto
 COPY --chown=www-data:www-data . .
 
 # Criar banco de dados SQLite
 RUN mkdir -p database \
     && touch database/database.sqlite \
     && chmod 666 database/database.sqlite
+
+# Instalar dependências do PHP
+RUN composer install --optimize-autoloader --no-dev --no-interaction
 
 # Instalar dependências do Node.js e compilar assets
 RUN npm install \
@@ -91,9 +93,6 @@ RUN php artisan config:cache \
 # Expor porta 80
 EXPOSE 80
 
-# Health check para EasyPanel
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost/ || exit 1
 
 # Comando de inicialização
 CMD ["apache2-foreground"]
